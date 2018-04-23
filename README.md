@@ -12,4 +12,17 @@ Generally we want the jetty to block the surface level wind and it's associated 
 
 ## How to use:
 
-- you need to have python installed on your computer along with the _Pillow_ and _tkinter_ modules
+1. you need python 3.5+ installed on your computer along with the _Pillow_ and _tkinter_ modules
+2. clone (download) script to your local drive and run with your python interpreter
+3. enter the wind and swell directions at the promps on the console
+4. when the picture of the jetty opens, use your _left mouse button_ to select these three points:
+  a. the point where the shore and NE jetty meet
+  b. the end of the NE jetty
+  c. some spot along the shoreline
+5. you should now see a translucent black triangle showing the calibration points. press `RETURN` to generate the geometric shadows cast by each. press your _right mouse button_ to clear the results and recalibrate the image.
+
+## what you're seeing
+
+- light blue triangle is the wind (chop) shadow. more of this is better.
+- the blue-green triangle is the geometric swell shadow. less of this is better
+- Note that this code doesn't try to approximate swell refraction. In reality, swell will bend around the jetty and fill in the swell shadow. The idea here is that the biggest swell will be found _outside_ the shadow and it will get smaller as you move inside the shadow. This can be a good thing if you want smaller waves to paddle out through or ride.
