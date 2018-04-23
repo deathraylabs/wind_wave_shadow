@@ -112,13 +112,13 @@ class MainWindow():
         # return tkcomposite
         return None
 
-    def draw_polygon(self, coords):
-        draw = PIL.ImageDraw.Draw(self.overlay)
-        draw.polygon(coords, fill=(145,0,145,100))
+    def draw_polygon(self, coords, color='black', trans=(80,)):
+        # convert color name to RGBA tuple
+        poly_color = (PIL.ImageColor.getrgb(color) + trans)
 
-        # tkcomposite = self.combine_image_overlay(self.base_image,
-        #                                          self.overlay)
-        # return tkcomposite
+        draw = PIL.ImageDraw.Draw(self.overlay)
+        draw.polygon(coords, fill=poly_color)
+
         return None
 
     def update_canvas(self, updated_canvas_image):
@@ -171,9 +171,14 @@ class MainWindow():
                                                 self.coords['n_jetty_end'],
                                                 self.coords['n_shoreline_end'],
                                                 self.wind_direction)
+        wave_shadow = self.calculate_projection(self.coords['n_jetty_start'],
+                                                self.coords['n_jetty_end'],
+                                                self.coords['n_shoreline_end'],
+                                                self.wave_direction)
         print(wind_shadow)
 
-        self.draw_polygon(wind_shadow)
+        self.draw_polygon(wind_shadow, 'DeepSkyBlue')
+        self.draw_polygon(wave_shadow, 'purple')
         tkcomposite = self.combine_image_overlay(self.base_image,
                                                  self.overlay)
         self.update_canvas(tkcomposite)
@@ -204,10 +209,12 @@ class MainWindow():
         return tkcomposite
 
     def get_windwave_direction(self):
-        self.wind_direction = float(input('What is the wind direction in '
-                                       'degrees? '))
+        # self.wind_direction = float(input('What is the wind direction in '
+        #                                'degrees? '))
         # self.wave_direction = float(input('What is the wave direction in '
         #                                 'degrees?'))
+        self.wind_direction = 190  # for testing
+        self.wave_direction = 160  # for testing
 
     def calculate_projection(self,
                              point_jetty_shore,
