@@ -67,6 +67,7 @@ class MainWindow():
         self.canvas.bind("<Button 1>", self.savecoords)
         # reset canvas with right mouse click
         self.canvas.bind("<Button 2>", self.reset_overlay)
+        self.canvas.bind("<Return>", self.return_key)
         # frame will not be visible unless it is packed
         self.frame.pack(fill=BOTH, expand=1)
 
@@ -134,6 +135,9 @@ class MainWindow():
         click_point = event
         # print(click_point)
 
+        # sets the focus to the canvas so the keyboard will capture
+        self.canvas.focus_set()
+
         self.draw_point(click_point)
         label = self.label_grabber(self.coord_labels)
 
@@ -159,6 +163,10 @@ class MainWindow():
         self.update_canvas(tkcomposite)
 
         return None
+
+    # function called on key click
+    def return_key(self, event):
+        print(event.keysym)
 
     # function to prompt for next label coordinate
     def label_grabber(self, labels):
@@ -277,6 +285,9 @@ root = Tk()
 
 # initialize our canvas object
 map_canvas = MainWindow(root, "surfside.png")
+
+# prompt for wind and wave direction
+# map_canvas.get_windwave_direction()
 
 root.mainloop()
 # root.destroy()  # kills the loop when you stop execution
