@@ -183,9 +183,15 @@ class MainWindow():
                                                 self.wave_direction)
         print(wind_shadow)
 
+        # reset the overlay
+        self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
+                                     color=(0, 0, 0, 0))
+
         self.draw_polygon(wind_shadow, 'DeepSkyBlue')
-        self.draw_polygon(wave_shadow, 'purple')
-        tkcomposite = self.combine_image_overlay(self.base_image,
+        composite = PIL.Image.alpha_composite(self.base_image, self.overlay)
+
+        self.draw_polygon(wave_shadow, 'MediumAquamarine')
+        tkcomposite = self.combine_image_overlay(composite,
                                                  self.overlay)
         self.update_canvas(tkcomposite)
 
@@ -215,12 +221,12 @@ class MainWindow():
         return tkcomposite
 
     def get_windwave_direction(self):
-        # self.wind_direction = float(input('What is the wind direction in '
-        #                                'degrees? '))
-        # self.wave_direction = float(input('What is the wave direction in '
-        #                                 'degrees?'))
-        self.wind_direction = 190  # for testing
-        self.wave_direction = 170  # for testing
+        self.wind_direction = float(input('What is the wind direction in '
+                                       'degrees? '))
+        self.wave_direction = float(input('What is the wave direction in '
+                                        'degrees?'))
+        # self.wind_direction = 190  # for testing
+        # self.wave_direction = 170  # for testing
 
     def calculate_projection(self,
                              point_jetty_shore,
