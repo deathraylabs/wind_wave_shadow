@@ -224,11 +224,23 @@ class MainWindow():
 
     def get_windwave_direction(self):
         self.wind_direction = float(input('What is the wind direction in '
-                                       'degrees? '))
+                                       'degrees? \n'))
         self.wave_direction = float(input('What is the wave direction in '
-                                        'degrees?'))
+                                        'degrees? \n'))
+        print("**************************************\n"
+              "*  Hit RETURN to show wind direction *\n"
+              "**************************************\n"
+              "*    click on the map to calibrate   *\n"
+              "**************************************\n"
+              "*      right mouse button resets     *\n"
+              "**************************************\n")
+
+        self.canvas.focus_set()
+
         # self.wind_direction = 190  # for testing
         # self.wave_direction = 170  # for testing
+
+        return None
 
     def calculate_projection(self,
                              point_jetty_shore,
