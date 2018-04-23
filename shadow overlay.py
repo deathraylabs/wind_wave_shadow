@@ -22,6 +22,8 @@ class MainWindow():
                             # 's_shoreline_start',
                             # 's_shoreline_end'
                             ]
+        self.wind_direction = 999   # impossible direction initialization
+        self.wave_direction = 999
 
         # setting up a tkinter frame with scrollbars
         self.frame = Frame(main, bd=2, relief=SUNKEN)
@@ -68,6 +70,7 @@ class MainWindow():
         # frame will not be visible unless it is packed
         self.frame.pack(fill=BOTH, expand=1)
 
+    # right mouse click resets the overlay screen
     def reset_overlay(self, event):
         # create a transparent overlay pillow image object
         self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
@@ -194,74 +197,80 @@ class MainWindow():
 
         return tkcomposite
 
+    def get_windwave_direction(self):
+        self.wind_direction = input('What is the wind direction in degrees? ')
+        self.wave_direction = input('What is the wave direction in degrees?')
 
-def calc_projection(point_jetty_shore, point_jetty_end, point_shore,
-                    shadow_dir):
-    """ function that calculates the projected line from the end of the jetty to the shore.
-    Arguments are coordinates for the point where the jetty meets the shore, where the jetty
-    ends, and a point somewhere along the shoreline.
+    def calculate_projection(self,
+                             point_jetty_shore,
+                             point_jetty_end,
+                             point_shore,
+                             shadow_dir):
+        """ function that calculates the projected line from the end of the jetty to the shore.
+        Arguments are coordinates for the point where the jetty meets the shore, where the jetty
+        ends, and a point somewhere along the shoreline.
 
-    Returns coordinates of the shadow line.
-    """
+        Returns coordinates of the shadow line.
+        """
 
-    # jetty x and y components
-    jettylengthx = math.fabs(point_jetty_end[0] - point_jetty_shore[0])
-    print(jettylengthx)
-    jettylengthy = math.fabs(point_jetty_end[1] - point_jetty_shore[1])
-    print(jettylengthy)
+        # jetty x and y components
+        jettylengthx = math.fabs(point_jetty_end[0] - point_jetty_shore[0])
+        print(jettylengthx)
+        jettylengthy = math.fabs(point_jetty_end[1] - point_jetty_shore[1])
+        print(jettylengthy)
 
-    # called r12 in notes
-    jettylength = math.sqrt(jettylengthx ** 2 + jettylengthy ** 2)
-    print(jettylength)
+        # called r12 in notes
+        jettylength = math.sqrt(jettylengthx ** 2 + jettylengthy ** 2)
+        print(jettylength)
 
-    # shadow direction in radians is 180deg opposite of wave heading
-    shadow_rad = math.radians(shadow_dir - 180.0)
-    print(shadow_rad)
+        # shadow direction in radians is 180deg opposite of wave heading
+        shadow_rad = math.radians(shadow_dir - 180.0)
+        print(shadow_rad)
 
-    # theta 12 from notes (jetty angle CW from east)
-    jetty_angle_east = math.asin(jettylengthy / jettylength)
-    print(jetty_angle_east)
+        # theta 12 from notes (jetty angle CW from east)
+        jetty_angle_east = math.asin(jettylengthy / jettylength)
+        print(jetty_angle_east)
 
-    # shore x and y components
-    shoremeasx = math.fabs(point_shore[0] - point_jetty_shore[0])
-    print(shoremeasx)
-    shoremeasy = math.fabs(point_shore[1] - point_jetty_shore[1])
-    print(shoremeasy)
+        # shore x and y components
+        shoremeasx = math.fabs(point_shore[0] - point_jetty_shore[0])
+        print(shoremeasx)
+        shoremeasy = math.fabs(point_shore[1] - point_jetty_shore[1])
+        print(shoremeasy)
 
-    # shore angle CCW from east
-    shore_angle_east = math.atan(shoremeasy / shoremeasx)
-    print(shore_angle_east)
+        # shore angle CCW from east
+        shore_angle_east = math.atan(shoremeasy / shoremeasx)
+        print(shore_angle_east)
 
-    # shore plus jetty angle (angle gamma from notes)
-    shore_jetty_angle = shore_angle_east + jetty_angle_east
-    print(shore_jetty_angle)
+        # shore plus jetty angle (angle gamma from notes)
+        shore_jetty_angle = shore_angle_east + jetty_angle_east
+        print(shore_jetty_angle)
 
-    # angle between shadow and jetty (angle alpha in notes)
-    jetty_shadow_angle = (math.pi / 2 - jetty_angle_east) + shadow_rad
-    print(jetty_shadow_angle)
+        # angle between shadow and jetty (angle alpha in notes)
+        jetty_shadow_angle = (math.pi / 2 - jetty_angle_east) + shadow_rad
+        print(jetty_shadow_angle)
 
-    # angle between shore and shadow (angle beta in notes)
-    shore_shadow_angle = math.pi - (jetty_shadow_angle + shore_jetty_angle)
-    print(shore_shadow_angle)
+        # angle between shore and shadow (angle beta in notes)
+        shore_shadow_angle = math.pi - (jetty_shadow_angle + shore_jetty_angle)
+        print(shore_shadow_angle)
 
-    # shadow length (length c in notes)
-    shadow_length = jettylength * (
-                math.sin(shore_jetty_angle) / math.sin(shore_shadow_angle))
-    print(shadow_length)
+        # shadow length (length c in notes)
+        shadow_length = jettylength * (
+                    math.sin(shore_jetty_angle) / math.sin(shore_shadow_angle))
+        print(shadow_length)
 
-    # shadow x and y components
-    shadow_lengthx = shadow_length * math.sin(shadow_rad)
-    shadow_lengthy = shadow_length * math.cos(shadow_rad)
+        # shadow x and y components
+        shadow_lengthx = shadow_length * math.sin(shadow_rad)
+        shadow_lengthy = shadow_length * math.cos(shadow_rad)
 
-    # shadow-shore point
-    shadowx = point_jetty_end[0] - shadow_lengthx
-    shadowy = point_jetty_end[1] - shadow_lengthy
-    point_shadow_shore = (shadowx, shadowy)
-    print(point_shadow_shore)
+        # shadow-shore point
+        shadowx = point_jetty_end[0] - shadow_lengthx
+        shadowy = point_jetty_end[1] - shadow_lengthy
+        point_shadow_shore = (shadowx, shadowy)
+        print(point_shadow_shore)
 
-    return point_shadow_shore
+        return point_shadow_shore
 
-    # need to make sure that the shadow point coordinates are never negative
+        # need to make sure that the shadow point coordinates are never negative
 
 # main tk frame (whatever that means)
 root = Tk()
