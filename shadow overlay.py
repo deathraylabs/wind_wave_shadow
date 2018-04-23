@@ -144,13 +144,12 @@ class MainWindow():
         if len(self.coord_labels) > 0:
             # update dict
             self.coords[label] = (click_point.x, click_point.y)
-        elif len(self.coord_labels) == 0:
+        elif len(self.coord_labels) == 0 and label != "done":
             self.coords[label] = (click_point.x, click_point.y)
             # this is where I draw the polygon
             coord_list = [self.coords["n_jetty_start"],
                           self.coords["n_jetty_end"],
                           self.coords["n_shoreline_end"]]
-
             self.draw_polygon(coord_list)
 
         print(self.coords)
@@ -182,18 +181,6 @@ class MainWindow():
             label = labels.pop(0)
             print("click on the point corresponding to " + labels[0])
             return label
-
-        # try:
-        #     # grab the first label off the list
-        #     label = labels.pop(0)
-        # except:
-        #     print("No more points to record")
-        #     label = "done"
-        #
-        # try:
-        #     print("click on the point corresponding to " + labels[0])
-        # except:
-        #     print("The last point was recorded")
 
     def combine_image_overlay(self, base_image, overlay):
         # combine original image and overlay
