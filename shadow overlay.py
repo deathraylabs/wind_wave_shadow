@@ -10,8 +10,10 @@ class MainWindow():
     def __init__(self, main, map_path: object) -> None:
         # main frame
         self.main = main
-        # dictionary for coordinates
-        self.coords = {}
+        # dictionary with calibration points
+        self.coords = {'n_jetty_start': (602, 627),
+                       'n_jetty_end': (869, 919),
+                       'n_shoreline_end': (866, 261)}
         # list of coordinates you need for calibration
         self.coord_labels = ['n_jetty_start',
                             'n_jetty_end',
