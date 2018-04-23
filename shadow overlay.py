@@ -22,8 +22,8 @@ class MainWindow():
                             # 's_shoreline_start',
                             # 's_shoreline_end'
                             ]
-        self.wind_direction = 999   # impossible direction initialization
-        self.wave_direction = 999
+        self.wind_direction = 999.9   # impossible direction initialization
+        self.wave_direction = 999.9
 
         # setting up a tkinter frame with scrollbars
         self.frame = Frame(main, bd=2, relief=SUNKEN)
@@ -166,6 +166,12 @@ class MainWindow():
     # function called on key click
     def return_key(self, event):
         print(event.keysym)
+        # calculate the shadow
+        wind_shadow = self.calculate_projection(self.coords['n_jetty_start'],
+                                                self.coords['n_jetty_end'],
+                                                self.coords['n_shoreline_end'],
+                                                self.wind_direction)
+        print(wind_shadow)
 
     # function to prompt for next label coordinate
     def label_grabber(self, labels):
@@ -193,17 +199,20 @@ class MainWindow():
         return tkcomposite
 
     def get_windwave_direction(self):
-        self.wind_direction = input('What is the wind direction in degrees? ')
-        self.wave_direction = input('What is the wave direction in degrees?')
+        self.wind_direction = float(input('What is the wind direction in '
+                                       'degrees? '))
+        self.wave_direction = float(input('What is the wave direction in '
+                                        'degrees?'))
 
     def calculate_projection(self,
                              point_jetty_shore,
                              point_jetty_end,
                              point_shore,
                              shadow_dir):
-        """ function that calculates the projected line from the end of the jetty to the shore.
-        Arguments are coordinates for the point where the jetty meets the shore, where the jetty
-        ends, and a point somewhere along the shoreline.
+        """ function that calculates the projected line from the end of the
+        jetty to the shore. Arguments are coordinates for the point where the
+        jetty meets the shore, where the jetty ends, and a point somewhere
+        along the shoreline.
 
         Returns coordinates of the shadow line.
         """
@@ -258,12 +267,13 @@ class MainWindow():
         shadow_lengthy = shadow_length * math.cos(shadow_rad)
 
         # shadow-shore point
-        shadowx = point_jetty_end[0] - shadow_lengthx
-        shadowy = point_jetty_end[1] - shadow_lengthy
+        shadowx = int(point_jetty_end[0] - shadow_lengthx)
+        shadowy = int(point_jetty_end[1] - shadow_lengthy)
         point_shadow_shore = (shadowx, shadowy)
         print(point_shadow_shore)
 
-        return point_shadow_shore
+        # return coordinates needed to plot polygon
+        return (point_jetty_shore, point_jetty_end, point_shadow_shore)
 
         # need to make sure that the shadow point coordinates are never negative
 
@@ -274,7 +284,7 @@ root = Tk()
 map_canvas = MainWindow(root, "surfside.png")
 
 # prompt for wind and wave direction
-# map_canvas.get_windwave_direction()
+map_canvas.get_windwave_direction()
 
 root.mainloop()
 # root.destroy()  # kills the loop when you stop execution
