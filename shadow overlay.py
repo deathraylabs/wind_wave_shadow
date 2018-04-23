@@ -101,8 +101,16 @@ class MainWindow():
 
         # draw click circles
         diameter = 10 / 2  # pixels
-        point_circle = [(click_point.x - diameter, click_point.y - diameter),
-                        (click_point.x + diameter, click_point.y + diameter)]
+        try:
+            point_circle = [(click_point.x - diameter,
+                             click_point.y - diameter),
+                            (click_point.x + diameter,
+                             click_point.y + diameter)]
+        except:
+            point_circle = [(click_point[0] - diameter,
+                             click_point[0] - diameter),
+                            (click_point[0] + diameter,
+                             click_point[0] + diameter)]
 
         # draw shape on the transparent overlay
         draw = PIL.ImageDraw.Draw(self.overlay)
@@ -268,6 +276,10 @@ class MainWindow():
         shadowx = int(point_jetty_end[0] - shadow_lengthx)
         shadowy = int(point_jetty_end[1] - shadow_lengthy)
         point_shadow_shore = (shadowx, shadowy)
+
+        self.draw_point(point_shadow_shore, 'blue',)
+        self.draw_point(point_jetty_shore, 'black')
+        self.draw_point(point_jetty_end, 'red')
 
         # return coordinates needed to plot polygon
         return (point_jetty_shore, point_jetty_end, point_shadow_shore)
