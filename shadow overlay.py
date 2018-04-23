@@ -236,8 +236,10 @@ class MainWindow():
         """
 
         # jetty x and y components
-        jettylengthx = math.fabs(point_jetty_end[0] - point_jetty_shore[0])
-        jettylengthy = math.fabs(point_jetty_end[1] - point_jetty_shore[1])
+        jettylengthx = point_jetty_end[0] - point_jetty_shore[0]
+        jettylengthy = point_jetty_end[1] - point_jetty_shore[1]
+        # jettylengthx = math.fabs(point_jetty_end[0] - point_jetty_shore[0])
+        # jettylengthy = math.fabs(point_jetty_end[1] - point_jetty_shore[1])
 
         # called r12 in notes
         jettylength = math.sqrt(jettylengthx ** 2 + jettylengthy ** 2)
@@ -249,16 +251,19 @@ class MainWindow():
         jetty_angle_east = math.asin(jettylengthy / jettylength)
 
         # shore x and y components
-        shoremeasx = math.fabs(point_shore[0] - point_jetty_shore[0])
-        shoremeasy = math.fabs(point_shore[1] - point_jetty_shore[1])
+        shoremeasx = point_shore[0] - point_jetty_shore[0]
+        shoremeasy = point_shore[1] - point_jetty_shore[1]
+        # shoremeasx = math.fabs(point_shore[0] - point_jetty_shore[0])
+        # shoremeasy = math.fabs(point_shore[1] - point_jetty_shore[1])
 
         # shore angle CCW from east
-        shore_angle_east = math.atan(shoremeasy / shoremeasx)
+        shore_angle_east = math.atan(math.fabs(shoremeasy / shoremeasx))
 
         # shore plus jetty angle (angle gamma from notes)
         shore_jetty_angle = shore_angle_east + jetty_angle_east
 
         # angle between shadow and jetty (angle alpha in notes)
+        # should always be positive or wrong jetty selected
         jetty_shadow_angle = (math.pi / 2 - jetty_angle_east) + shadow_rad
 
         # angle between shore and shadow (angle beta in notes)
@@ -273,13 +278,14 @@ class MainWindow():
         shadow_lengthy = shadow_length * math.cos(shadow_rad)
 
         # shadow-shore point
-        shadowx = int(point_jetty_end[0] - shadow_lengthx)
+        shadowx = int(point_jetty_end[0] + shadow_lengthx)
         shadowy = int(point_jetty_end[1] - shadow_lengthy)
         point_shadow_shore = (shadowx, shadowy)
 
-        self.draw_point(point_shadow_shore, 'blue',)
-        self.draw_point(point_jetty_shore, 'black')
-        self.draw_point(point_jetty_end, 'red')
+        #something wrong with this debugging code anyway
+        # self.draw_point(point_shadow_shore, 'blue',)
+        # self.draw_point(point_jetty_shore, 'black')
+        # self.draw_point(point_jetty_end, 'red')
 
         # return coordinates needed to plot polygon
         return (point_jetty_shore, point_jetty_end, point_shadow_shore)
@@ -294,6 +300,9 @@ map_canvas = MainWindow(root, "surfside.png")
 
 # prompt for wind and wave direction
 map_canvas.get_windwave_direction()
+
+# debugging code
+# map_canvas.calculate_projection((602,627),(869,919),(866,261),190)
 
 root.mainloop()
 # root.destroy()  # kills the loop when you stop execution
