@@ -1,6 +1,6 @@
 from tkinter import *
 # from PIL import Image, ImageDraw, ImageTk
-import PIL.Image, PIL.ImageTk, PIL.ImageDraw
+import PIL.Image, PIL.ImageTk, PIL.ImageDraw, PIL.ImageColor
 import math
 
 
@@ -173,6 +173,11 @@ class MainWindow():
                                                 self.wind_direction)
         print(wind_shadow)
 
+        self.draw_polygon(wind_shadow)
+        tkcomposite = self.combine_image_overlay(self.base_image,
+                                                 self.overlay)
+        self.update_canvas(tkcomposite)
+
     # function to prompt for next label coordinate
     def label_grabber(self, labels):
 
@@ -201,8 +206,8 @@ class MainWindow():
     def get_windwave_direction(self):
         self.wind_direction = float(input('What is the wind direction in '
                                        'degrees? '))
-        self.wave_direction = float(input('What is the wave direction in '
-                                        'degrees?'))
+        # self.wave_direction = float(input('What is the wave direction in '
+        #                                 'degrees?'))
 
     def calculate_projection(self,
                              point_jetty_shore,
@@ -219,48 +224,36 @@ class MainWindow():
 
         # jetty x and y components
         jettylengthx = math.fabs(point_jetty_end[0] - point_jetty_shore[0])
-        print(jettylengthx)
         jettylengthy = math.fabs(point_jetty_end[1] - point_jetty_shore[1])
-        print(jettylengthy)
 
         # called r12 in notes
         jettylength = math.sqrt(jettylengthx ** 2 + jettylengthy ** 2)
-        print(jettylength)
 
         # shadow direction in radians is 180deg opposite of wave heading
         shadow_rad = math.radians(shadow_dir - 180.0)
-        print(shadow_rad)
 
         # theta 12 from notes (jetty angle CW from east)
         jetty_angle_east = math.asin(jettylengthy / jettylength)
-        print(jetty_angle_east)
 
         # shore x and y components
         shoremeasx = math.fabs(point_shore[0] - point_jetty_shore[0])
-        print(shoremeasx)
         shoremeasy = math.fabs(point_shore[1] - point_jetty_shore[1])
-        print(shoremeasy)
 
         # shore angle CCW from east
         shore_angle_east = math.atan(shoremeasy / shoremeasx)
-        print(shore_angle_east)
 
         # shore plus jetty angle (angle gamma from notes)
         shore_jetty_angle = shore_angle_east + jetty_angle_east
-        print(shore_jetty_angle)
 
         # angle between shadow and jetty (angle alpha in notes)
         jetty_shadow_angle = (math.pi / 2 - jetty_angle_east) + shadow_rad
-        print(jetty_shadow_angle)
 
         # angle between shore and shadow (angle beta in notes)
         shore_shadow_angle = math.pi - (jetty_shadow_angle + shore_jetty_angle)
-        print(shore_shadow_angle)
 
         # shadow length (length c in notes)
         shadow_length = jettylength * (
                     math.sin(shore_jetty_angle) / math.sin(shore_shadow_angle))
-        print(shadow_length)
 
         # shadow x and y components
         shadow_lengthx = shadow_length * math.sin(shadow_rad)
@@ -270,7 +263,6 @@ class MainWindow():
         shadowx = int(point_jetty_end[0] - shadow_lengthx)
         shadowy = int(point_jetty_end[1] - shadow_lengthy)
         point_shadow_shore = (shadowx, shadowy)
-        print(point_shadow_shore)
 
         # return coordinates needed to plot polygon
         return (point_jetty_shore, point_jetty_end, point_shadow_shore)
