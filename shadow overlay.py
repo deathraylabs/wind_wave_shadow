@@ -93,9 +93,12 @@ class MainWindow():
         self.update_canvas(updated_image)
         return None
 
-    def draw_point(self, click_point):
+    def draw_point(self, click_point, color='black', trans=255):
         """ click_point is the coordinate recorded during mouse click event
         """
+        # convert color name to RGBA tuple
+        poly_color = (PIL.ImageColor.getrgb(color) + (trans,))
+
         # draw click circles
         diameter = 10 / 2  # pixels
         point_circle = [(click_point.x - diameter, click_point.y - diameter),
@@ -103,18 +106,13 @@ class MainWindow():
 
         # draw shape on the transparent overlay
         draw = PIL.ImageDraw.Draw(self.overlay)
-        draw.ellipse(point_circle, fill='black')
+        draw.ellipse(point_circle, fill=poly_color)
 
-        # # use function to combine image and updated overlay
-        # tkcomposite = self.combine_image_overlay(self.base_image,
-        #                                          self.overlay)
-        #
-        # return tkcomposite
         return None
 
-    def draw_polygon(self, coords, color='black', trans=(80,)):
+    def draw_polygon(self, coords, color='black', trans=80):
         # convert color name to RGBA tuple
-        poly_color = (PIL.ImageColor.getrgb(color) + trans)
+        poly_color = (PIL.ImageColor.getrgb(color) + (trans,))
 
         draw = PIL.ImageDraw.Draw(self.overlay)
         draw.polygon(coords, fill=poly_color)
@@ -214,7 +212,7 @@ class MainWindow():
         # self.wave_direction = float(input('What is the wave direction in '
         #                                 'degrees?'))
         self.wind_direction = 190  # for testing
-        self.wave_direction = 160  # for testing
+        self.wave_direction = 170  # for testing
 
     def calculate_projection(self,
                              point_jetty_shore,
