@@ -271,3 +271,5 @@ map_canvas = MainWindow(root, "surfside.png")
 
 root.mainloop()
 # root.destroy()  # kills the loop when you stop execution
+
+# one change
