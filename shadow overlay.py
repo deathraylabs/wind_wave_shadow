@@ -16,14 +16,14 @@ class MainWindow():
                        'n_shoreline_end': (866, 261)}
         # list of coordinates you need for calibration
         self.coord_labels = ['n_jetty_start',
-                            'n_jetty_end',
-                            # 's_jetty_start',
-                            # 's_jetty_end',
-                            # 'n_shoreline_start',
-                            'n_shoreline_end',
-                            # 's_shoreline_start',
-                            # 's_shoreline_end'
-                            ]
+                             'n_jetty_end',
+                             # 's_jetty_start',
+                             # 's_jetty_end',
+                             # 'n_shoreline_start',
+                             'n_shoreline_end',
+                             # 's_shoreline_start',
+                             # 's_shoreline_end'
+                             ]
         self.wind_direction = 999.9   # impossible direction initialization
         self.wave_direction = 999.9
 
@@ -68,13 +68,13 @@ class MainWindow():
         # mouseclick event
         self.canvas.bind("<Button 1>", self.savecoords)
         # reset canvas with right mouse click
-        self.canvas.bind("<Button 2>", self.reset_overlay)
+        self.canvas.bind("<Button 2>", self.reset_everything)
         self.canvas.bind("<Return>", self.return_key)
         # frame will not be visible unless it is packed
         self.frame.pack(fill=BOTH, expand=1)
 
     # right mouse click resets the overlay screen
-    def reset_overlay(self, event):
+    def reset_everything(self, event):
         # create a transparent overlay pillow image object
         self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
                                      color=(0, 0, 0, 0))
@@ -94,6 +94,9 @@ class MainWindow():
                             ]
         self.update_canvas(updated_image)
         return None
+
+    # todo: create method that generates a fresh overlay instead of
+    # relying on updating the class object self.overlay
 
     def draw_point(self, click_point, color='black', trans=255):
         """ click_point is the coordinate recorded during mouse click event
@@ -120,6 +123,7 @@ class MainWindow():
 
         return None
 
+    # todo: switch to drawing a polygon on an overlay passed to method
     def draw_polygon(self, coords, color='black', trans=80):
         # convert color name to RGBA tuple
         poly_color = (PIL.ImageColor.getrgb(color) + (trans,))
@@ -183,7 +187,6 @@ class MainWindow():
                                                 self.coords['n_jetty_end'],
                                                 self.coords['n_shoreline_end'],
                                                 self.wave_direction)
-        print(wind_shadow)
 
         # reset the overlay
         self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
