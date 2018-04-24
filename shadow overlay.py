@@ -55,6 +55,9 @@ class MainWindow():
         # create a transparent overlay pillow image object
         self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
                                      color=(0, 0, 0, 0))
+        # last generated composit image
+        self.last_image = PIL.Image.new(mode='RGBA', size=self.base_image.size,
+                                        color=(0, 0, 0, 0))
         # create a tk image object
         self.tk_base_image = PIL.ImageTk.PhotoImage(self.base_image)
 
@@ -70,6 +73,7 @@ class MainWindow():
         # reset canvas with right mouse click
         self.canvas.bind("<Button 2>", self.reset_everything)
         self.canvas.bind("<Return>", self.return_key)
+        self.canvas.bind("<p>", self.p_key)
         # frame will not be visible unless it is packed
         self.frame.pack(fill=BOTH, expand=1)
 
@@ -95,8 +99,11 @@ class MainWindow():
         self.update_canvas(updated_image)
         return None
 
-    # todo: create method that generates a fresh overlay instead of
-    # relying on updating the class object self.overlay
+    # generate an overlay image to place an object on
+    def create_overlay(self):
+        # black transparent overlay based on the sat image
+        return PIL.Image.new(mode='RGBA', size=self.base_image.size,
+                                     color=(0, 0, 0, 0))
 
     def draw_point(self, click_point, color='black', trans=255):
         """ click_point is the coordinate recorded during mouse click event
@@ -124,14 +131,14 @@ class MainWindow():
         return None
 
     # todo: switch to drawing a polygon on an overlay passed to method
-    def draw_polygon(self, coords, color='black', trans=80):
+    def draw_polygon(self, overlay, coords, color='black', trans=80):
         # convert color name to RGBA tuple
         poly_color = (PIL.ImageColor.getrgb(color) + (trans,))
 
-        draw = PIL.ImageDraw.Draw(self.overlay)
+        draw = PIL.ImageDraw.Draw(overlay)
         draw.polygon(coords, fill=poly_color)
 
-        return None
+        return overlay
 
     def update_canvas(self, updated_canvas_image):
         """update the canvas after the image has changed
@@ -162,7 +169,7 @@ class MainWindow():
             coord_list = [self.coords["n_jetty_start"],
                           self.coords["n_jetty_end"],
                           self.coords["n_shoreline_end"]]
-            self.draw_polygon(coord_list)
+            self.draw_polygon(self.overlay, coord_list)
 
         print(self.coords)
 
@@ -188,16 +195,25 @@ class MainWindow():
                                                 self.coords['n_shoreline_end'],
                                                 self.wave_direction)
 
-        # reset the overlay
-        self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
-                                     color=(0, 0, 0, 0))
+        # create blank overlay images for wind and waves
+        wind_overlay = self.create_overlay()
+        wave_overlay = self.create_overlay()
+        # conditional_overlay = self.create_overlay()
 
-        self.draw_polygon(wind_shadow, 'Green', 80)
-        composite = PIL.Image.alpha_composite(self.base_image, self.overlay)
+        # generate shadows
+        # shadow_transparency = .5  # 0 is transparent 1 is opaque
+        # alpha = int(shadow_transparency * 255)
+        self.draw_polygon(wind_overlay, wind_shadow, 'Green', 127)
+        self.draw_polygon(wave_overlay, wave_shadow, 'red', 50)
+        # self.draw_polygon(conditional_overlay, wind_shadow, 'yellow', alpha)
 
-        self.draw_polygon(wave_shadow, 'red', 80)
-        tkcomposite = self.combine_image_overlay(composite,
-                                                 self.overlay)
+        shadow_composite = PIL.Image.alpha_composite(wind_overlay, wave_overlay)
+        # shadow_composite = PIL.Image.blend(wind_overlay, wave_overlay, 0.5)
+        composite = PIL.Image.alpha_composite(self.base_image, shadow_composite)
+        # in case we want to save this image later
+        self.last_image = composite
+
+        tkcomposite = self.combine_image_overlay(composite, self.overlay)
         self.update_canvas(tkcomposite)
 
     # function to prompt for next label coordinate
@@ -215,6 +231,10 @@ class MainWindow():
             print("click on the point corresponding to " + labels[0])
             return label
 
+    # open generated image in preview on mac
+    def p_key(self, event):
+        self.last_image.show()
+
     def combine_image_overlay(self, base_image, overlay):
         # combine original image and overlay
         composite = PIL.Image.alpha_composite(base_image, overlay)
@@ -225,11 +245,14 @@ class MainWindow():
 
         return tkcomposite
 
-    def get_windwave_direction(self):
-        self.wind_direction = float(input('What is the wind direction in '
-                                       'degrees? \n'))
-        self.wave_direction = float(input('What is the wave direction in '
-                                        'degrees? \n'))
+    def get_windwave_direction(self, wind_direction=None, wave_direction=None):
+
+        if wind_direction is None:
+            self.wind_direction = float(input('What is the wind direction in '
+                                              'degrees? \n'))
+        if wave_direction is None:
+            self.wave_direction = float(input('What is the wave direction in '
+                                              'degrees? \n'))
         print("**************************************\n"
               "*  Hit RETURN to show wind direction *\n"
               "**************************************\n"
@@ -238,7 +261,12 @@ class MainWindow():
               "*      right mouse button resets     *\n"
               "**************************************\n")
 
+        self.wind_direction = wind_direction
+        self.wave_direction = wave_direction
         self.canvas.focus_set()
+
+        print("wind direction: " + str(wind_direction) + "°")
+        print("wave direction: " + str(wave_direction) + "°")
 
         # self.wind_direction = 190  # for testing
         # self.wave_direction = 170  # for testing
@@ -322,12 +350,14 @@ root = Tk()
 map_canvas = MainWindow(root, "surfside.png")
 
 # prompt for wind and wave direction
-map_canvas.get_windwave_direction()
+# map_canvas.get_windwave_direction(190, 160)
+map_canvas.get_windwave_direction(160, 190)
 
 # debugging code
 # map_canvas.calculate_projection((602,627),(869,919),(866,261),190)
 
 root.mainloop()
+
 # root.destroy()  # kills the loop when you stop execution
 
 # one change
