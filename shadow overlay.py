@@ -249,10 +249,14 @@ class MainWindow():
 
     def get_windwave_direction(self, wind_direction=None, wave_direction=None):
 
-        if wind_direction is None:
+        if wind_direction is not None:
+            self.wind_direction = wind_direction
+        else:
             self.wind_direction = float(input('What is the wind direction in '
                                               'degrees? \n'))
-        if wave_direction is None:
+        if wave_direction is not None:
+            self.wave_direction = wave_direction
+        else:
             self.wave_direction = float(input('What is the wave direction in '
                                               'degrees? \n'))
         print("**************************************\n"
@@ -263,8 +267,6 @@ class MainWindow():
               "*      right mouse button resets     *\n"
               "**************************************\n")
 
-        self.wind_direction = wind_direction
-        self.wave_direction = wave_direction
         self.canvas.focus_set()
 
         print("wind direction: " + str(wind_direction) + "°")
@@ -353,7 +355,7 @@ map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
 # prompt for wind and wave direction
 # map_canvas.get_windwave_direction(190, 160)
-map_canvas.get_windwave_direction(160, 190)
+map_canvas.get_windwave_direction()
 
 # debugging code
 # map_canvas.calculate_projection((602,627),(869,919),(866,261),190)
