@@ -7,13 +7,13 @@ import math
 class MainWindow():
     """ Object used to track and update state of the canvas
     """
-    def __init__(self, main, map_path: object) -> None:
+    def __init__(self, main, map_path: object, mask_path) -> None:
         # main frame
         self.main = main
         # dictionary with calibration points
-        self.coords = {'n_jetty_start': (602, 627),
+        self.coords = {'n_jetty_start': (530, 549),
                        'n_jetty_end': (869, 919),
-                       'n_shoreline_end': (866, 261)}
+                       'n_shoreline_end': (905, 115)}
         # list of coordinates you need for calibration
         self.coord_labels = ['n_jetty_start',
                              'n_jetty_end',
@@ -52,6 +52,7 @@ class MainWindow():
 
         # create a pillow image file object
         self.base_image = PIL.Image.open(map_path)
+        self.shadow_mask = PIL.Image.open(mask_path)
         # create a transparent overlay pillow image object
         self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
                                      color=(0, 0, 0, 0))
@@ -210,6 +211,9 @@ class MainWindow():
         shadow_composite = PIL.Image.alpha_composite(wind_overlay, wave_overlay)
         # shadow_composite = PIL.Image.blend(wind_overlay, wave_overlay, 0.5)
         composite = PIL.Image.alpha_composite(self.base_image, shadow_composite)
+        composite = PIL.Image.composite(self.base_image,
+                                        composite,
+                                        self.shadow_mask)
         # in case we want to save this image later
         self.last_image = composite
 
@@ -347,7 +351,7 @@ class MainWindow():
 root = Tk()
 
 # initialize our canvas object
-map_canvas = MainWindow(root, "surfside.png")
+map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
 # prompt for wind and wave direction
 # map_canvas.get_windwave_direction(190, 160)
