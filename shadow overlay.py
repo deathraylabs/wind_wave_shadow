@@ -189,10 +189,10 @@ class MainWindow():
         self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
                                      color=(0, 0, 0, 0))
 
-        self.draw_polygon(wind_shadow, 'DeepSkyBlue')
+        self.draw_polygon(wind_shadow, 'Green', 80)
         composite = PIL.Image.alpha_composite(self.base_image, self.overlay)
 
-        self.draw_polygon(wave_shadow, 'MediumAquamarine')
+        self.draw_polygon(wave_shadow, 'red', 80)
         tkcomposite = self.combine_image_overlay(composite,
                                                  self.overlay)
         self.update_canvas(tkcomposite)
