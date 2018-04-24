@@ -202,8 +202,6 @@ class MainWindow():
         # conditional_overlay = self.create_overlay()
 
         # generate shadows
-        # shadow_transparency = .5  # 0 is transparent 1 is opaque
-        # alpha = int(shadow_transparency * 255)
         self.draw_polygon(wind_overlay, wind_shadow, 'Green', 127)
         self.draw_polygon(wave_overlay, wave_shadow, 'red', 50)
         # self.draw_polygon(conditional_overlay, wind_shadow, 'yellow', alpha)
