@@ -1,13 +1,15 @@
 from tkinter import *
+from tkinter import ttk
 # from PIL import Image, ImageDraw, ImageTk
 import PIL.Image, PIL.ImageTk, PIL.ImageDraw, PIL.ImageColor
 import math
-
+from datetime import datetime
 
 class MainWindow():
     """ Object used to track and update state of the canvas
     """
     def __init__(self, main, map_path: object, mask_path) -> None:
+
         # main frame
         self.main = main
         # dictionary with calibration points
@@ -28,6 +30,7 @@ class MainWindow():
         self.wave_direction = 999.9
 
         # setting up a tkinter frame with scrollbars
+        # bd=  this is the border width
         self.frame = Frame(main, bd=2, relief=SUNKEN)
         self.frame.grid_rowconfigure(0, weight=1)
         self.frame.grid_columnconfigure(0, weight=1)
@@ -75,6 +78,7 @@ class MainWindow():
         self.canvas.bind("<Button 2>", self.reset_everything)
         self.canvas.bind("<Return>", self.return_key)
         self.canvas.bind("<p>", self.p_key)
+        self.canvas.bind("<q>", self.q_key)
         # frame will not be visible unless it is packed
         self.frame.pack(fill=BOTH, expand=1)
 
@@ -233,9 +237,25 @@ class MainWindow():
             print("click on the point corresponding to " + labels[0])
             return label
 
-    # open generated image in preview on mac
+    # save current image
     def p_key(self, event):
-        self.last_image.show()
+        """ Method for saving a .png version of the currently displayed
+        pillow file image.
+
+        :param event:
+        :return:
+        """
+        # self.last_image.show()
+        # time string format
+        fmt = '%y%m%d%H%M%S'
+        now_str = datetime.now().strftime(fmt)
+        dir_str = "/Users/peej/Downloads/"
+
+        file_str = dir_str + "shadow" + now_str + ".png"
+        self.last_image.save(file_str, format='png')
+
+    def q_key(self, event):
+        self.main.destroy()
 
     def combine_image_overlay(self, base_image, overlay):
         # combine original image and overlay
@@ -247,6 +267,7 @@ class MainWindow():
 
         return tkcomposite
 
+    # todo: wind and wave direction should be a gui pop up, not console
     def get_windwave_direction(self, wind_direction=None, wave_direction=None):
 
         if wind_direction is not None:
@@ -277,6 +298,8 @@ class MainWindow():
 
         return None
 
+    # todo: logic needs to distinguish between N and S jetty directions
+    # todo: logic needs to handle parallel projections (infinite triangle)
     def calculate_projection(self,
                              point_jetty_shore,
                              point_jetty_end,
@@ -349,6 +372,7 @@ class MainWindow():
 
 # main tk frame (whatever that means)
 root = Tk()
+root.title("Wind and Wave Shadow Projections")
 
 # initialize our canvas object
 map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
