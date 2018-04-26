@@ -12,13 +12,13 @@ from datetime import datetime
 
 # get arguments from command line
 try:
-    wind_direction = sys.argv[1]
-    swell_direction = sys.argv[2]
+    wind_direction_input = sys.argv[1]
+    swell_direction_input = sys.argv[2]
 except IndexError:
     # fail gracefully if not run from command line
     print("No command line arguments given.")
-    wind_direction = None
-    swell_direction = None
+    wind_direction_input = None
+    swell_direction_input = None
 
 
 def draw_polygon(overlay, coords, color='black', trans=80):
@@ -55,6 +55,7 @@ def combine_image_overlay(base_image, overlay):
     # tkcomposite = PhotoImage(tkcomposite)
 
     return tkcomposite
+
 
 class MainWindow:
     """ Object used to track and update state of the canvas
@@ -139,7 +140,7 @@ class MainWindow:
         self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
                                      color=(0, 0, 0, 0))
         updated_image = combine_image_overlay(self.base_image,
-                                                   self.overlay)
+                                              self.overlay)
         # reset recorded mouse coordinate points
         self.coords = {}
         # reset coordinate point names
@@ -222,7 +223,7 @@ class MainWindow:
 
         # combine images to format tk can use
         tkcomposite = combine_image_overlay(self.base_image,
-                                                 self.overlay)
+                                            self.overlay)
 
         # update the canvas with composit image by calling method below
         self.update_canvas(tkcomposite)
@@ -308,8 +309,6 @@ class MainWindow:
         # jetty x and y components
         jettylengthx = point_jetty_end[0] - point_jetty_shore[0]
         jettylengthy = point_jetty_end[1] - point_jetty_shore[1]
-        # jettylengthx = math.fabs(point_jetty_end[0] - point_jetty_shore[0])
-        # jettylengthy = math.fabs(point_jetty_end[1] - point_jetty_shore[1])
 
         # called r12 in notes
         jettylength = math.sqrt(jettylengthx ** 2 + jettylengthy ** 2)
@@ -323,8 +322,6 @@ class MainWindow:
         # shore x and y components
         shoremeasx = point_shore[0] - point_jetty_shore[0]
         shoremeasy = point_shore[1] - point_jetty_shore[1]
-        # shoremeasx = math.fabs(point_shore[0] - point_jetty_shore[0])
-        # shoremeasy = math.fabs(point_shore[1] - point_jetty_shore[1])
 
         # shore angle CCW from east
         shore_angle_east = math.atan(math.fabs(shoremeasy / shoremeasx))
@@ -351,11 +348,6 @@ class MainWindow:
         shadowx = int(point_jetty_end[0] + shadow_lengthx)
         shadowy = int(point_jetty_end[1] - shadow_lengthy)
         point_shadow_shore = (shadowx, shadowy)
-
-        #something wrong with this debugging code anyway
-        # self.draw_point(point_shadow_shore, 'blue',)
-        # self.draw_point(point_jetty_shore, 'black')
-        # self.draw_point(point_jetty_end, 'red')
 
         # return coordinates needed to plot polygon
         return (point_jetty_shore, point_jetty_end, point_shadow_shore)
@@ -408,7 +400,7 @@ root.title("Wind and Wave Shadow Projections")
 map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
 # prompt for wind and wave direction
-map_canvas.get_windwave_direction(wind_direction, swell_direction)
+map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
 # map_canvas.get_windwave_direction()
 
 # display the wind projection if possible
