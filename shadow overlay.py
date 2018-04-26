@@ -3,8 +3,10 @@
 import sys      # required for command line arguments
 from tkinter import *
 # from tkinter import ttk
-# from PIL import Image, ImageDraw, ImageTk
-import PIL.Image, PIL.ImageTk, PIL.ImageDraw, PIL.ImageColor
+import PIL.Image
+import PIL.ImageTk
+import PIL.ImageDraw
+import PIL.ImageColor
 import math
 from datetime import datetime
 
@@ -44,6 +46,15 @@ def label_grabber(labels):
         print("click on the point corresponding to " + labels[0])
         return label
 
+def combine_image_overlay(base_image, overlay):
+    # combine original image and overlay
+    composite = PIL.Image.alpha_composite(base_image, overlay)
+    # composite.show()
+    # create tk compatible image
+    tkcomposite = PIL.ImageTk.PhotoImage(composite)
+    # tkcomposite = PhotoImage(tkcomposite)
+
+    return tkcomposite
 
 class MainWindow:
     """ Object used to track and update state of the canvas
@@ -127,7 +138,7 @@ class MainWindow:
         # create a transparent overlay pillow image object
         self.overlay = PIL.Image.new(mode='RGBA', size=self.base_image.size,
                                      color=(0, 0, 0, 0))
-        updated_image = self.combine_image_overlay(self.base_image,
+        updated_image = combine_image_overlay(self.base_image,
                                                    self.overlay)
         # reset recorded mouse coordinate points
         self.coords = {}
@@ -210,7 +221,7 @@ class MainWindow:
         print(self.coords)
 
         # combine images to format tk can use
-        tkcomposite = self.combine_image_overlay(self.base_image,
+        tkcomposite = combine_image_overlay(self.base_image,
                                                  self.overlay)
 
         # update the canvas with composit image by calling method below
@@ -243,19 +254,11 @@ class MainWindow:
         file_str = dir_str + "shadow" + now_str + ".png"
         self.last_image.save(file_str, format='png')
 
+        return event
+
     def q_key(self, event):
         self.main.destroy()
-
-    def combine_image_overlay(self, base_image, overlay):
-        # combine original image and overlay
-        composite = PIL.Image.alpha_composite(base_image, overlay)
-        # composite.show()
-        # create tk compatible image
-        tkcomposite = PIL.ImageTk.PhotoImage(composite)
-        # tkcomposite = PhotoImage(tkcomposite)
-
-        return tkcomposite
-
+        return event
 
     def get_windwave_direction(self, wind_direction=None, wave_direction=None):
 
@@ -391,10 +394,11 @@ class MainWindow:
         # in case we want to save this image later
         self.last_image = composite
 
-        tkcomposite = self.combine_image_overlay(composite, self.overlay)
+        tkcomposite = combine_image_overlay(composite, self.overlay)
         self.update_canvas(tkcomposite)
 
         return None
+
 
 # main tk frame (whatever that means)
 root = Tk()
@@ -413,5 +417,3 @@ map_canvas.display_projection_on_map()
 root.mainloop()
 
 # root.destroy()  # kills the loop when you stop execution
-
-# one change
