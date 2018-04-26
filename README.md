@@ -33,10 +33,10 @@ Generally we want the jetty to block the surface level wind and its associated c
     * `p` saves a png image file to the `~/downloads` directory on a mac.
     * `right-click` clears the screen and resets the calibration
     * `left-click` captures calibration points, which is essentially for testing. So if you were to right click reset the screen, you would:
-	a. `left-click` the point where the jetty and shore meet
-	b. `left-click` the point where the jetty ends
-	c. `left-click` a point on the shore
-	d. hit `Return` after you see the black triangle and it will project the shadows again.
+        a. `left-click` the point where the jetty and shore meet
+        b. `left-click` the point where the jetty ends
+        c. `left-click` a point on the shore
+        d. hit `Return` after you see the black triangle and it will project the shadows again.
 
 ## what you're seeing
 
