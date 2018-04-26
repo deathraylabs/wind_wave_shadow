@@ -46,6 +46,7 @@ def label_grabber(labels):
         print("click on the point corresponding to " + labels[0])
         return label
 
+
 def combine_image_overlay(base_image, overlay):
     # combine original image and overlay
     composite = PIL.Image.alpha_composite(base_image, overlay)
@@ -57,8 +58,8 @@ def combine_image_overlay(base_image, overlay):
     return tkcomposite
 
 
-    # todo: logic needs to distinguish between N and S jetty directions
-    # todo: logic needs to handle parallel projections (infinite triangle)
+# todo: logic needs to distinguish between N and S jetty directions
+# todo: logic needs to handle parallel projections (infinite triangle)
 def projection_calculations(point_jetty_shore,
                             point_jetty_end,
                             point_shore,
@@ -351,10 +352,6 @@ class MainWindow:
         # self.wave_direction = 170  # for testing
 
         return None
-
-
-
-    # need to make sure that the shadow point coordinates are never negative
 
     # todo: should display arrows for wind and swell directions
     # todo: projection colors are straight up ugly
