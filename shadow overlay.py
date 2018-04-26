@@ -95,7 +95,6 @@ class MainWindow():
         # frame will not be visible unless it is packed
         self.frame.pack(fill=BOTH, expand=1)
 
-
     # right mouse click resets the overlay screen
     def reset_everything(self, event):
         # create a transparent overlay pillow image object
@@ -107,22 +106,23 @@ class MainWindow():
         self.coords = {}
         # reset coordinate point names
         self.coord_labels = ['n_jetty_start',
-                            'n_jetty_end',
-                            # 's_jetty_start',
-                            # 's_jetty_end',
-                            # 'n_shoreline_start',
-                            'n_shoreline_end',
-                            # 's_shoreline_start',
-                            # 's_shoreline_end'
-                            ]
+                             'n_jetty_end',
+                             # 's_jetty_start',
+                             # 's_jetty_end',
+                             # 'n_shoreline_start',
+                             'n_shoreline_end',
+                             # 's_shoreline_start',
+                             # 's_shoreline_end'
+                             ]
         self.update_canvas(updated_image)
-        return None
+
+        return event
 
     # generate an overlay image to place an object on
     def create_overlay(self):
         # black transparent overlay based on the sat image
         return PIL.Image.new(mode='RGBA', size=self.base_image.size,
-                                     color=(0, 0, 0, 0))
+                             color=(0, 0, 0, 0))
 
     def draw_point(self, click_point, color='black', trans=255):
         """ click_point is the coordinate recorded during mouse click event
@@ -137,7 +137,7 @@ class MainWindow():
                              click_point.y - diameter),
                             (click_point.x + diameter,
                              click_point.y + diameter)]
-        except:
+        except AttributeError:
             point_circle = [(click_point[0] - diameter,
                              click_point[0] - diameter),
                             (click_point[0] + diameter,
@@ -357,6 +357,7 @@ class MainWindow():
         # need to make sure that the shadow point coordinates are never negative
 
     # todo: should display arrows for wind and swell directions
+    # todo: projection colors are straight up ugly
     def display_projection_on_map(self):
         # calculate the shadow
         wind_shadow = self.projection_calculations(self.coords['n_jetty_start'],
