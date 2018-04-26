@@ -18,6 +18,7 @@ except IndexError:
     wind_direction = None
     swell_direction = None
 
+
 def draw_polygon(overlay, coords, color='black', trans=80):
     # convert color name to RGBA tuple
     poly_color = (PIL.ImageColor.getrgb(color) + (trans,))
@@ -27,7 +28,24 @@ def draw_polygon(overlay, coords, color='black', trans=80):
 
     return overlay
 
-class MainWindow():
+
+# function to prompt for next label coordinate
+def label_grabber(labels):
+
+    if len(labels) == 0:
+        print("All calibration points have been recorded.")
+        return "done"
+    elif len(labels) == 1:
+        label = labels.pop(0)
+        print("The last calibration point was recorded.")
+        return label
+    else:
+        label = labels.pop(0)
+        print("click on the point corresponding to " + labels[0])
+        return label
+
+
+class MainWindow:
     """ Object used to track and update state of the canvas
     """
     def __init__(self, main, map_path, mask_path):
@@ -158,8 +176,6 @@ class MainWindow():
 
         return None
 
-
-
     def update_canvas(self, updated_canvas_image):
         """update the canvas after the image has changed
         """
@@ -178,7 +194,7 @@ class MainWindow():
         self.canvas.focus_set()
 
         self.draw_point(click_point)
-        label = self.label_grabber(self.coord_labels)
+        label = label_grabber(self.coord_labels)
 
         if len(self.coord_labels) > 0:
             # update dict
@@ -209,21 +225,6 @@ class MainWindow():
 
         # don't have much use for this but whatever
         return event.keysym
-
-    # function to prompt for next label coordinate
-    def label_grabber(self, labels):
-
-        if len(labels) == 0:
-            print("All calibration points have been recorded.")
-            return "done"
-        elif len(labels) == 1:
-            label = labels.pop(0)
-            print("The last calibration point was recorded.")
-            return label
-        else:
-            label = labels.pop(0)
-            print("click on the point corresponding to " + labels[0])
-            return label
 
     # save current image
     def p_key(self, event):
