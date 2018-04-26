@@ -16,7 +16,7 @@ Generally we want the jetty to block the surface level wind and its associated c
 
 2. clone (download) script to your local drive
 
-3. open terminal window and make the script executable `chmod +x /your path/shadow\ overlay.py`
+3. open terminal window, change your working directory to the cloned directory, and then the script executable `chmod +x shadow\ overlay.py` It's necessary for your working directory to be the same as the script directory in order for the link to the `surfside.png` file to resolve.
 
 4. get the wind and swell directions from magicseaweed.com or some other source
 
