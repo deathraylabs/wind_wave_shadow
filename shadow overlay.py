@@ -18,6 +18,15 @@ except IndexError:
     wind_direction = None
     swell_direction = None
 
+def draw_polygon(overlay, coords, color='black', trans=80):
+    # convert color name to RGBA tuple
+    poly_color = (PIL.ImageColor.getrgb(color) + (trans,))
+
+    draw = PIL.ImageDraw.Draw(overlay)
+    draw.polygon(coords, fill=poly_color)
+
+    return overlay
+
 class MainWindow():
     """ Object used to track and update state of the canvas
     """
@@ -149,14 +158,7 @@ class MainWindow():
 
         return None
 
-    def draw_polygon(self, overlay, coords, color='black', trans=80):
-        # convert color name to RGBA tuple
-        poly_color = (PIL.ImageColor.getrgb(color) + (trans,))
 
-        draw = PIL.ImageDraw.Draw(overlay)
-        draw.polygon(coords, fill=poly_color)
-
-        return overlay
 
     def update_canvas(self, updated_canvas_image):
         """update the canvas after the image has changed
@@ -187,7 +189,7 @@ class MainWindow():
             coord_list = [self.coords["n_jetty_start"],
                           self.coords["n_jetty_end"],
                           self.coords["n_shoreline_end"]]
-            self.draw_polygon(self.overlay, coord_list)
+            draw_polygon(self.overlay, coord_list)
 
         print(self.coords)
 
@@ -375,9 +377,9 @@ class MainWindow():
         # conditional_overlay = self.create_overlay()
 
         # generate shadows
-        self.draw_polygon(wind_overlay, wind_shadow, 'Green', 127)
-        self.draw_polygon(wave_overlay, wave_shadow, 'red', 50)
-        # self.draw_polygon(conditional_overlay, wind_shadow, 'yellow', alpha)
+        draw_polygon(wind_overlay, wind_shadow, 'Green', 127)
+        draw_polygon(wave_overlay, wave_shadow, 'red', 50)
+        # draw_polygon(conditional_overlay, wind_shadow, 'yellow', alpha)
 
         shadow_composite = PIL.Image.alpha_composite(wind_overlay, wave_overlay)
         # shadow_composite = PIL.Image.blend(wind_overlay, wave_overlay, 0.5)
