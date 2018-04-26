@@ -57,6 +57,67 @@ def combine_image_overlay(base_image, overlay):
     return tkcomposite
 
 
+    # todo: logic needs to distinguish between N and S jetty directions
+    # todo: logic needs to handle parallel projections (infinite triangle)
+def projection_calculations(point_jetty_shore,
+                            point_jetty_end,
+                            point_shore,
+                            shadow_dir):
+    """ function that calculates the projected line from the end of the
+    jetty to the shore. Arguments are coordinates for the point where the
+    jetty meets the shore, where the jetty ends, and a point somewhere
+    along the shoreline.
+
+    Returns coordinates of the shadow line.
+    """
+
+    # jetty x and y components
+    jettylengthx = point_jetty_end[0] - point_jetty_shore[0]
+    jettylengthy = point_jetty_end[1] - point_jetty_shore[1]
+
+    # called r12 in notes
+    jettylength = math.sqrt(jettylengthx ** 2 + jettylengthy ** 2)
+
+    # shadow direction in radians is 180deg opposite of wave heading
+    shadow_rad = math.radians(shadow_dir - 180.0)
+
+    # theta 12 from notes (jetty angle CW from east)
+    jetty_angle_east = math.asin(jettylengthy / jettylength)
+
+    # shore x and y components
+    shoremeasx = point_shore[0] - point_jetty_shore[0]
+    shoremeasy = point_shore[1] - point_jetty_shore[1]
+
+    # shore angle CCW from east
+    shore_angle_east = math.atan(math.fabs(shoremeasy / shoremeasx))
+
+    # shore plus jetty angle (angle gamma from notes)
+    shore_jetty_angle = shore_angle_east + jetty_angle_east
+
+    # angle between shadow and jetty (angle alpha in notes)
+    # should always be positive or wrong jetty selected
+    jetty_shadow_angle = (math.pi / 2 - jetty_angle_east) + shadow_rad
+
+    # angle between shore and shadow (angle beta in notes)
+    shore_shadow_angle = math.pi - (jetty_shadow_angle + shore_jetty_angle)
+
+    # shadow length (length c in notes)
+    shadow_length = jettylength * (
+                math.sin(shore_jetty_angle) / math.sin(shore_shadow_angle))
+
+    # shadow x and y components
+    shadow_lengthx = shadow_length * math.sin(shadow_rad)
+    shadow_lengthy = shadow_length * math.cos(shadow_rad)
+
+    # shadow-shore point
+    shadowx = int(point_jetty_end[0] + shadow_lengthx)
+    shadowy = int(point_jetty_end[1] - shadow_lengthy)
+    point_shadow_shore = (shadowx, shadowy)
+
+    # return coordinates needed to plot polygon
+    return point_jetty_shore, point_jetty_end, point_shadow_shore
+
+
 class MainWindow:
     """ Object used to track and update state of the canvas
     """
@@ -291,81 +352,22 @@ class MainWindow:
 
         return None
 
-    # todo: logic needs to distinguish between N and S jetty directions
-    # todo: logic needs to handle parallel projections (infinite triangle)
-    def projection_calculations(self,
-                                point_jetty_shore,
-                                point_jetty_end,
-                                point_shore,
-                                shadow_dir):
-        """ function that calculates the projected line from the end of the
-        jetty to the shore. Arguments are coordinates for the point where the
-        jetty meets the shore, where the jetty ends, and a point somewhere
-        along the shoreline.
 
-        Returns coordinates of the shadow line.
-        """
 
-        # jetty x and y components
-        jettylengthx = point_jetty_end[0] - point_jetty_shore[0]
-        jettylengthy = point_jetty_end[1] - point_jetty_shore[1]
-
-        # called r12 in notes
-        jettylength = math.sqrt(jettylengthx ** 2 + jettylengthy ** 2)
-
-        # shadow direction in radians is 180deg opposite of wave heading
-        shadow_rad = math.radians(shadow_dir - 180.0)
-
-        # theta 12 from notes (jetty angle CW from east)
-        jetty_angle_east = math.asin(jettylengthy / jettylength)
-
-        # shore x and y components
-        shoremeasx = point_shore[0] - point_jetty_shore[0]
-        shoremeasy = point_shore[1] - point_jetty_shore[1]
-
-        # shore angle CCW from east
-        shore_angle_east = math.atan(math.fabs(shoremeasy / shoremeasx))
-
-        # shore plus jetty angle (angle gamma from notes)
-        shore_jetty_angle = shore_angle_east + jetty_angle_east
-
-        # angle between shadow and jetty (angle alpha in notes)
-        # should always be positive or wrong jetty selected
-        jetty_shadow_angle = (math.pi / 2 - jetty_angle_east) + shadow_rad
-
-        # angle between shore and shadow (angle beta in notes)
-        shore_shadow_angle = math.pi - (jetty_shadow_angle + shore_jetty_angle)
-
-        # shadow length (length c in notes)
-        shadow_length = jettylength * (
-                    math.sin(shore_jetty_angle) / math.sin(shore_shadow_angle))
-
-        # shadow x and y components
-        shadow_lengthx = shadow_length * math.sin(shadow_rad)
-        shadow_lengthy = shadow_length * math.cos(shadow_rad)
-
-        # shadow-shore point
-        shadowx = int(point_jetty_end[0] + shadow_lengthx)
-        shadowy = int(point_jetty_end[1] - shadow_lengthy)
-        point_shadow_shore = (shadowx, shadowy)
-
-        # return coordinates needed to plot polygon
-        return (point_jetty_shore, point_jetty_end, point_shadow_shore)
-
-        # need to make sure that the shadow point coordinates are never negative
+    # need to make sure that the shadow point coordinates are never negative
 
     # todo: should display arrows for wind and swell directions
     # todo: projection colors are straight up ugly
     def display_projection_on_map(self):
         # calculate the shadow
-        wind_shadow = self.projection_calculations(self.coords['n_jetty_start'],
-                                                   self.coords['n_jetty_end'],
-                                                   self.coords['n_shoreline_end'],
-                                                   self.wind_direction)
-        wave_shadow = self.projection_calculations(self.coords['n_jetty_start'],
-                                                   self.coords['n_jetty_end'],
-                                                   self.coords['n_shoreline_end'],
-                                                   self.wave_direction)
+        wind_shadow = projection_calculations(self.coords['n_jetty_start'],
+                                              self.coords['n_jetty_end'],
+                                              self.coords['n_shoreline_end'],
+                                              self.wind_direction)
+        wave_shadow = projection_calculations(self.coords['n_jetty_start'],
+                                              self.coords['n_jetty_end'],
+                                              self.coords['n_shoreline_end'],
+                                              self.wave_direction)
 
         # create blank overlay images for wind and waves
         wind_overlay = self.create_overlay()
