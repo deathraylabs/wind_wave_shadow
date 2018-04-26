@@ -1,14 +1,27 @@
+#! /Users/peej/anaconda/envs/automate_boring/bin/python
+
+import sys      # required for command line arguments
 from tkinter import *
-from tkinter import ttk
+# from tkinter import ttk
 # from PIL import Image, ImageDraw, ImageTk
 import PIL.Image, PIL.ImageTk, PIL.ImageDraw, PIL.ImageColor
 import math
 from datetime import datetime
 
+# get arguments from command line
+try:
+    wind_direction = sys.argv[1]
+    swell_direction = sys.argv[2]
+except IndexError:
+    # fail gracefully if not run from command line
+    print("No command line arguments given.")
+    wind_direction = None
+    swell_direction = None
+
 class MainWindow():
     """ Object used to track and update state of the canvas
     """
-    def __init__(self, main, map_path: object, mask_path) -> None:
+    def __init__(self, main, map_path, mask_path):
 
         # main frame
         self.main = main
@@ -72,15 +85,16 @@ class MainWindow():
                                      anchor="nw")
         self.canvas.config(scrollregion=self.canvas.bbox(ALL))
 
-        # mouseclick event
+        # keyboard and mouse button bindings
         self.canvas.bind("<Button 1>", self.savecoords)
-        # reset canvas with right mouse click
         self.canvas.bind("<Button 2>", self.reset_everything)
         self.canvas.bind("<Return>", self.return_key)
         self.canvas.bind("<p>", self.p_key)
         self.canvas.bind("<q>", self.q_key)
+
         # frame will not be visible unless it is packed
         self.frame.pack(fill=BOTH, expand=1)
+
 
     # right mouse click resets the overlay screen
     def reset_everything(self, event):
@@ -135,7 +149,6 @@ class MainWindow():
 
         return None
 
-    # todo: switch to drawing a polygon on an overlay passed to method
     def draw_polygon(self, overlay, coords, color='black', trans=80):
         # convert color name to RGBA tuple
         poly_color = (PIL.ImageColor.getrgb(color) + (trans,))
@@ -189,38 +202,11 @@ class MainWindow():
 
     # function called on key click
     def return_key(self, event):
-        print(event.keysym)
-        # calculate the shadow
-        wind_shadow = self.calculate_projection(self.coords['n_jetty_start'],
-                                                self.coords['n_jetty_end'],
-                                                self.coords['n_shoreline_end'],
-                                                self.wind_direction)
-        wave_shadow = self.calculate_projection(self.coords['n_jetty_start'],
-                                                self.coords['n_jetty_end'],
-                                                self.coords['n_shoreline_end'],
-                                                self.wave_direction)
 
-        # create blank overlay images for wind and waves
-        wind_overlay = self.create_overlay()
-        wave_overlay = self.create_overlay()
-        # conditional_overlay = self.create_overlay()
+        self.display_projection_on_map()
 
-        # generate shadows
-        self.draw_polygon(wind_overlay, wind_shadow, 'Green', 127)
-        self.draw_polygon(wave_overlay, wave_shadow, 'red', 50)
-        # self.draw_polygon(conditional_overlay, wind_shadow, 'yellow', alpha)
-
-        shadow_composite = PIL.Image.alpha_composite(wind_overlay, wave_overlay)
-        # shadow_composite = PIL.Image.blend(wind_overlay, wave_overlay, 0.5)
-        composite = PIL.Image.alpha_composite(self.base_image, shadow_composite)
-        composite = PIL.Image.composite(self.base_image,
-                                        composite,
-                                        self.shadow_mask)
-        # in case we want to save this image later
-        self.last_image = composite
-
-        tkcomposite = self.combine_image_overlay(composite, self.overlay)
-        self.update_canvas(tkcomposite)
+        # don't have much use for this but whatever
+        return event.keysym
 
     # function to prompt for next label coordinate
     def label_grabber(self, labels):
@@ -267,16 +253,16 @@ class MainWindow():
 
         return tkcomposite
 
-    # todo: wind and wave direction should be a gui pop up, not console
+
     def get_windwave_direction(self, wind_direction=None, wave_direction=None):
 
         if wind_direction is not None:
-            self.wind_direction = wind_direction
+            self.wind_direction = float(wind_direction)
         else:
             self.wind_direction = float(input('What is the wind direction in '
                                               'degrees? \n'))
         if wave_direction is not None:
-            self.wave_direction = wave_direction
+            self.wave_direction = float(wave_direction)
         else:
             self.wave_direction = float(input('What is the wave direction in '
                                               'degrees? \n'))
@@ -300,11 +286,11 @@ class MainWindow():
 
     # todo: logic needs to distinguish between N and S jetty directions
     # todo: logic needs to handle parallel projections (infinite triangle)
-    def calculate_projection(self,
-                             point_jetty_shore,
-                             point_jetty_end,
-                             point_shore,
-                             shadow_dir):
+    def projection_calculations(self,
+                                point_jetty_shore,
+                                point_jetty_end,
+                                point_shore,
+                                shadow_dir):
         """ function that calculates the projected line from the end of the
         jetty to the shore. Arguments are coordinates for the point where the
         jetty meets the shore, where the jetty ends, and a point somewhere
@@ -370,6 +356,42 @@ class MainWindow():
 
         # need to make sure that the shadow point coordinates are never negative
 
+    # todo: should display arrows for wind and swell directions
+    def display_projection_on_map(self):
+        # calculate the shadow
+        wind_shadow = self.projection_calculations(self.coords['n_jetty_start'],
+                                                   self.coords['n_jetty_end'],
+                                                   self.coords['n_shoreline_end'],
+                                                   self.wind_direction)
+        wave_shadow = self.projection_calculations(self.coords['n_jetty_start'],
+                                                   self.coords['n_jetty_end'],
+                                                   self.coords['n_shoreline_end'],
+                                                   self.wave_direction)
+
+        # create blank overlay images for wind and waves
+        wind_overlay = self.create_overlay()
+        wave_overlay = self.create_overlay()
+        # conditional_overlay = self.create_overlay()
+
+        # generate shadows
+        self.draw_polygon(wind_overlay, wind_shadow, 'Green', 127)
+        self.draw_polygon(wave_overlay, wave_shadow, 'red', 50)
+        # self.draw_polygon(conditional_overlay, wind_shadow, 'yellow', alpha)
+
+        shadow_composite = PIL.Image.alpha_composite(wind_overlay, wave_overlay)
+        # shadow_composite = PIL.Image.blend(wind_overlay, wave_overlay, 0.5)
+        composite = PIL.Image.alpha_composite(self.base_image, shadow_composite)
+        composite = PIL.Image.composite(self.base_image,
+                                        composite,
+                                        self.shadow_mask)
+        # in case we want to save this image later
+        self.last_image = composite
+
+        tkcomposite = self.combine_image_overlay(composite, self.overlay)
+        self.update_canvas(tkcomposite)
+
+        return None
+
 # main tk frame (whatever that means)
 root = Tk()
 root.title("Wind and Wave Shadow Projections")
@@ -378,11 +400,11 @@ root.title("Wind and Wave Shadow Projections")
 map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
 # prompt for wind and wave direction
-# map_canvas.get_windwave_direction(190, 160)
-map_canvas.get_windwave_direction()
+map_canvas.get_windwave_direction(wind_direction, swell_direction)
+# map_canvas.get_windwave_direction()
 
-# debugging code
-# map_canvas.calculate_projection((602,627),(869,919),(866,261),190)
+# display the wind projection if possible
+map_canvas.display_projection_on_map()
 
 root.mainloop()
 
