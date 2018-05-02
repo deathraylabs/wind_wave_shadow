@@ -16,7 +16,7 @@ Generally we want the jetty to block the surface level wind and its associated c
 
 2. clone (download) script to your local drive
 
-3. open terminal window and make the script executable `chmod +x /your path/shadow\ overlay.py`
+3. open terminal window, change your working directory to the cloned directory, and then the script executable `chmod +x shadow\ overlay.py` It's necessary for your working directory to be the same as the script directory in order for the link to the `surfside.png` file to resolve.
 
 4. get the wind and swell directions from magicseaweed.com or some other source
 
@@ -33,10 +33,10 @@ Generally we want the jetty to block the surface level wind and its associated c
     * `p` saves a png image file to the `~/downloads` directory on a mac.
     * `right-click` clears the screen and resets the calibration
     * `left-click` captures calibration points, which is essentially for testing. So if you were to right click reset the screen, you would:
-	a. `left-click` the point where the jetty and shore meet
-	b. `left-click` the point where the jetty ends
-	c. `left-click` a point on the shore
-	d. hit `Return` after you see the black triangle and it will project the shadows again.
+        a. `left-click` the point where the jetty and shore meet
+        b. `left-click` the point where the jetty ends
+        c. `left-click` a point on the shore
+        d. hit `Return` after you see the black triangle and it will project the shadows again.
 
 ## what you're seeing
 
