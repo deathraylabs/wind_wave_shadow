@@ -136,7 +136,7 @@ def projection_calculations(point_jetty_shore,
     point_shadow_shore = (shadowx, shadowy)
 
     print('This is the {}-Jetty'.format(n_or_s_jetty))
-    print('The shadow angle is {}°'.format(str(jetty_angle_degrees)[:4]))
+    print('The shadow angle is {}°'.format(str(shadow_dir)[:4]))
     print('The jetty angle is  {}°'.format(str(jetty_angle_degrees)[:4]))
     print('alpha is            {}°'.format(str(alpha_degrees)[:4]))
     print('beta is             {}°'.format(str(beta_degrees)[:4]))
@@ -383,25 +383,26 @@ class MainWindow:
     # todo: should display arrows for wind and swell directions
     # todo: projection colors are straight up ugly
     def display_projection_on_map(self):
+        # create blank overlay images for wind and waves
+        wind_overlay = self.create_overlay()
+        wave_overlay = self.create_overlay()
+
         # calculate the shadow
-        wind_shadow = projection_calculations(self.coords['n_jetty_start'],
+        wind_shadow_n = projection_calculations(self.coords['n_jetty_start'],
                                               self.coords['n_jetty_end'],
                                               self.coords['n_shoreline_end'],
                                               self.wind_direction)
-        wave_shadow = projection_calculations(self.coords['n_jetty_start'],
+        # draw shadows if they exist
+        if wind_shadow_n != 'no shadow':
+            draw_polygon(wind_overlay, wind_shadow_n, 'Green', 127)
+
+        wave_shadow_n = projection_calculations(self.coords['n_jetty_start'],
                                               self.coords['n_jetty_end'],
                                               self.coords['n_shoreline_end'],
                                               self.wave_direction)
 
-        # create blank overlay images for wind and waves
-        wind_overlay = self.create_overlay()
-        wave_overlay = self.create_overlay()
-        # conditional_overlay = self.create_overlay()
-
-        # generate shadows
-        draw_polygon(wind_overlay, wind_shadow, 'Green', 127)
-        draw_polygon(wave_overlay, wave_shadow, 'red', 50)
-        # draw_polygon(conditional_overlay, wind_shadow, 'yellow', alpha)
+        if wave_shadow_n != 'no shadow':
+            draw_polygon(wave_overlay, wave_shadow_n, 'red', 50)
 
         shadow_composite = PIL.Image.alpha_composite(wind_overlay, wave_overlay)
         # shadow_composite = PIL.Image.blend(wind_overlay, wave_overlay, 0.5)
