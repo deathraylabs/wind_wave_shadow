@@ -382,27 +382,43 @@ class MainWindow:
 
     # todo: should display arrows for wind and swell directions
     # todo: projection colors are straight up ugly
+    # todo: create logic to find projection for south jetty as well
     def display_projection_on_map(self):
         # create blank overlay images for wind and waves
         wind_overlay = self.create_overlay()
         wave_overlay = self.create_overlay()
 
-        # calculate the shadow
+        # calculate the shadow for the north jetty
         wind_shadow_n = projection_calculations(self.coords['n_jetty_start'],
-                                              self.coords['n_jetty_end'],
-                                              self.coords['n_shoreline_end'],
-                                              self.wind_direction)
+                                                self.coords['n_jetty_end'],
+                                                self.coords['n_shoreline_end'],
+                                                self.wind_direction)
         # draw shadows if they exist
         if wind_shadow_n != 'no shadow':
             draw_polygon(wind_overlay, wind_shadow_n, 'Green', 127)
 
         wave_shadow_n = projection_calculations(self.coords['n_jetty_start'],
-                                              self.coords['n_jetty_end'],
-                                              self.coords['n_shoreline_end'],
-                                              self.wave_direction)
-
+                                                self.coords['n_jetty_end'],
+                                                self.coords['n_shoreline_end'],
+                                                self.wave_direction)
         if wave_shadow_n != 'no shadow':
             draw_polygon(wave_overlay, wave_shadow_n, 'red', 50)
+
+        # calculate the shadow for the south jetty
+        wind_shadow_s = projection_calculations(self.coords['s_jetty_start'],
+                                                self.coords['s_jetty_end'],
+                                                self.coords['s_shoreline_end'],
+                                                self.wind_direction)
+        # draw shadows if they exist
+        if wind_shadow_s != 'no shadow':
+            draw_polygon(wind_overlay, wind_shadow_s, 'Green', 127)
+
+        wave_shadow_s = projection_calculations(self.coords['s_jetty_start'],
+                                                self.coords['s_jetty_end'],
+                                                self.coords['s_shoreline_end'],
+                                                self.wave_direction)
+        if wave_shadow_s != 'no shadow':
+            draw_polygon(wave_overlay, wave_shadow_s, 'red', 50)
 
         shadow_composite = PIL.Image.alpha_composite(wind_overlay, wave_overlay)
         # shadow_composite = PIL.Image.blend(wind_overlay, wave_overlay, 0.5)
