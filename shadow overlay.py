@@ -443,8 +443,8 @@ root.title("Wind and Wave Shadow Projections")
 map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
 # prompt for wind and wave direction
-# map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
-map_canvas.get_windwave_direction(90, 110)
+map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
+# map_canvas.get_windwave_direction(90, 110)
 
 # display the wind projection if possible
 map_canvas.display_projection_on_map()
