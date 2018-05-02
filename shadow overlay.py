@@ -10,6 +10,8 @@ import PIL.ImageColor
 import math
 from datetime import datetime
 
+# todo: get some legit docstrings in this bitch
+
 # get arguments from command line
 try:
     wind_direction_input = sys.argv[1]
@@ -129,17 +131,17 @@ class MainWindow:
         # dictionary with calibration points
         self.coords = {'n_jetty_start': (530, 549),
                        'n_jetty_end': (869, 919),
-                       'n_shoreline_end': (905, 115)}
+                       'n_shoreline_end': (905, 115),
+                       's_jetty_start': (515, 734),
+                       's_jetty_end': (781, 1027),
+                       's_shoreline_end': (208, 901)}
         # list of coordinates you need for calibration
         self.coord_labels = ['n_jetty_start',
                              'n_jetty_end',
-                             # 's_jetty_start',
-                             # 's_jetty_end',
-                             # 'n_shoreline_start',
+                             's_jetty_start',
+                             's_jetty_end',
                              'n_shoreline_end',
-                             # 's_shoreline_start',
-                             # 's_shoreline_end'
-                             ]
+                             's_shoreline_end']
         self.wind_direction = 999.9   # impossible direction initialization
         self.wave_direction = 999.9
 
@@ -399,8 +401,8 @@ root.title("Wind and Wave Shadow Projections")
 map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
 # prompt for wind and wave direction
-map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
-# map_canvas.get_windwave_direction()
+# map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
+map_canvas.get_windwave_direction(170, 180)
 
 # display the wind projection if possible
 map_canvas.display_projection_on_map()
