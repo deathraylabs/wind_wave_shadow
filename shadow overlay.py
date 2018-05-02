@@ -99,7 +99,7 @@ def projection_calculations(point_jetty_shore,
     # will the jetty cast a shadow?
     if shadow_dir - jetty_angle_degrees <= 0 and n_or_s_jetty == 'N':
         return 'no shadow'
-    elif shadow_dir - jetty_angle_degrees <= 0 and n_or_s_jetty == 'S':
+    elif shadow_dir - jetty_angle_degrees >= 0 and n_or_s_jetty == 'S':
         return 'no shadow'
 
     # shore x and y components
@@ -444,7 +444,7 @@ map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
 # prompt for wind and wave direction
 # map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
-map_canvas.get_windwave_direction(170, 180)
+map_canvas.get_windwave_direction(90, 110)
 
 # display the wind projection if possible
 map_canvas.display_projection_on_map()
