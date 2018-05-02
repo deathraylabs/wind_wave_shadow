@@ -60,7 +60,6 @@ def combine_image_overlay(base_image, overlay):
     return tkcomposite
 
 
-# todo: logic needs to distinguish between N and S jetty directions
 # todo: logic needs to handle parallel projections (infinite triangle)
 def projection_calculations(point_jetty_shore,
                             point_jetty_end,
@@ -73,6 +72,15 @@ def projection_calculations(point_jetty_shore,
 
     Returns coordinates of the shadow line.
     """
+    n_or_s_jetty = ''
+
+    # is the data for the north or south jetty?
+    if point_shore[0] - point_jetty_shore[0] > 0:
+        n_or_s_jetty = 'N'
+    elif point_shore[0] - point_jetty_shore[0] < 0:
+        n_or_s_jetty = 'S'
+    else:
+        raise ValueError
 
     # jetty x and y components
     jettylengthx = point_jetty_end[0] - point_jetty_shore[0]
@@ -86,6 +94,13 @@ def projection_calculations(point_jetty_shore,
 
     # theta 12 from notes (jetty angle CW from east)
     jetty_angle_east = math.asin(jettylengthy / jettylength)
+    jetty_angle_degrees = 90.0 + math.degrees(jetty_angle_east)
+
+    # will the jetty cast a shadow?
+    if shadow_dir - jetty_angle_degrees <= 0 and n_or_s_jetty == 'N':
+        return 'no shadow'
+    elif shadow_dir - jetty_angle_degrees <= 0 and n_or_s_jetty == 'S':
+        return 'no shadow'
 
     # shore x and y components
     shoremeasx = point_shore[0] - point_jetty_shore[0]
@@ -96,13 +111,16 @@ def projection_calculations(point_jetty_shore,
 
     # shore plus jetty angle (angle gamma from notes)
     shore_jetty_angle = shore_angle_east + jetty_angle_east
+    gamma_degrees = math.degrees(shore_jetty_angle)
 
     # angle between shadow and jetty (angle alpha in notes)
     # should always be positive or wrong jetty selected
     jetty_shadow_angle = (math.pi / 2 - jetty_angle_east) + shadow_rad
+    alpha_degrees = math.degrees(jetty_shadow_angle)
 
     # angle between shore and shadow (angle beta in notes)
     shore_shadow_angle = math.pi - (jetty_shadow_angle + shore_jetty_angle)
+    beta_degrees = math.degrees(shore_shadow_angle)
 
     # shadow length (length c in notes)
     shadow_length = jettylength * (
@@ -116,6 +134,13 @@ def projection_calculations(point_jetty_shore,
     shadowx = int(point_jetty_end[0] + shadow_lengthx)
     shadowy = int(point_jetty_end[1] - shadow_lengthy)
     point_shadow_shore = (shadowx, shadowy)
+
+    print('This is the {}-Jetty'.format(n_or_s_jetty))
+    print('The shadow angle is {}°'.format(str(jetty_angle_degrees)[:4]))
+    print('The jetty angle is  {}°'.format(str(jetty_angle_degrees)[:4]))
+    print('alpha is            {}°'.format(str(alpha_degrees)[:4]))
+    print('beta is             {}°'.format(str(beta_degrees)[:4]))
+    print('gamma is            {}°'.format(str(gamma_degrees)[:4]))
 
     # return coordinates needed to plot polygon
     return point_jetty_shore, point_jetty_end, point_shadow_shore
