@@ -442,6 +442,10 @@ root.title("Wind and Wave Shadow Projections")
 # initialize our canvas object
 map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
+from get_buoy_data import current_buoy_data
+swell_direction_input = float(current_buoy_data()[0])
+wind_direction_input = float(current_buoy_data()[1])
+
 # prompt for wind and wave direction
 map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
 # map_canvas.get_windwave_direction(90, 110)
