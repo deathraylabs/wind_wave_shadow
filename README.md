@@ -49,7 +49,8 @@ headings in python list format. For more information check out the [NDBC SOS
 site](https://sdf.ndbc.noaa.gov/sos/).
 
 ```python
-observedproperty_waves = ['station_id',
+observedproperty_waves = [
+                          'station_id',
                           'sensor_id',
                           'latitude (degree)',
                           'longitude (degree)',
@@ -74,5 +75,20 @@ observedproperty_waves = ['station_id',
                           'polar_coordinate_r1 (1)',
                           'polar_coordinate_r2 (1)',
                           'calculation_method',
-                          'sampling_rate (Hz)']
+                          'sampling_rate (Hz)'
+                          ]
+```
+
+```python
+observedproperty_winds = [
+                          'station_id', 
+                          'sensor_id', 
+                          'latitude (degree)', 
+                          'longitude (degree)', 
+                          'date_time', 'depth (m)', 
+                          'wind_from_direction (degree)', 
+                          'wind_speed (m/s)', 
+                          'wind_speed_of_gust (m/s)', 
+                          'upward_air_velocity (m/s)'
+                         ]
 ```
