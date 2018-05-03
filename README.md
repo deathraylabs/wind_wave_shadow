@@ -41,3 +41,38 @@ Generally we want the jetty to block the surface level wind and its associated c
 ## what you're seeing
 
 Note that this code doesn't take swell refraction into consideration. In reality, this swell refraction will cause it to bend around the jetty and fill in the swell shadow that this script has calculated. The idea here is that the biggest swell will be found _outside_ the shadow and it will get smaller as you move inside the shadow. This can be a good thing if you want smaller waves to paddle out through or ride.
+
+## Appendix A: useful _observed properties_ fields
+
+These are the IOOS Sensor Observation Service _observed properties_ CSV file 
+headings in python list format. For more information check out the [NDBC SOS 
+site](https://sdf.ndbc.noaa.gov/sos/).
+
+```python
+observedproperty_waves = ['station_id',
+                          'sensor_id',
+                          'latitude (degree)',
+                          'longitude (degree)',
+                          'date_time',
+                          'sea_surface_wave_significant_height (m)',
+                          'sea_surface_wave_peak_period (s)',
+                          'sea_surface_wave_mean_period (s)',
+                          'sea_surface_swell_wave_significant_height (m)',
+                          'sea_surface_swell_wave_period (s)',
+                          'sea_surface_wind_wave_significant_height (m)',
+                          'sea_surface_wind_wave_period (s)',
+                          'sea_water_temperature (c)',
+                          'sea_surface_wave_to_direction (degree)',
+                          'sea_surface_swell_wave_to_direction (degree)',
+                          'sea_surface_wind_wave_to_direction (degree)',
+                          'number_of_frequencies (count)',
+                          'center_frequencies (Hz)',
+                          'bandwidths (Hz)',
+                          'spectral_energy (m**2/Hz)',
+                          'mean_wave_direction (degree)',
+                          'principal_wave_direction (degree)',
+                          'polar_coordinate_r1 (1)',
+                          'polar_coordinate_r2 (1)',
+                          'calculation_method',
+                          'sampling_rate (Hz)']
+```

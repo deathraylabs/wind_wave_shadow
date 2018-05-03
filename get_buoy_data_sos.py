@@ -23,35 +23,44 @@ def utc_to_local_time(utc_iso_string):
 
     return utc_time.astimezone(local_zone)
 
-# this is the SOS server website we'll append our request to
-url_prefix = 'https://sdf.ndbc.noaa.gov/sos/server.php'
 
-# dict containing the specifics of our request. See IOOS site for details.
-payload = {'request': 'GetObservation',
-           'service': 'SOS',
-           'version': '1.0.0',
-           'offering': 'urn:ioos:station:wmo:42019',
-           'observedproperty': 'waves',
-           'responseformat': 'text/csv',
-           'eventtime': 'latest'}
+def get_sos_data(station_id, observed_property):
+    # station ID values must be upper case strings if not numeric
+    station_id = str(station_id).upper()
+    offering = 'urn:ioos:station:wmo:' + station_id
 
-# reformat the payload using typical HTTP POST syntax
-# this step is necessary because there are colons in the request that
-# cannot be escaped out or the request will be rejected as invalid
-payload_str =  "&".join("%s=%s" % (k,v) for k,v in payload.items())
+    # this is the SOS server website we'll append our request to
+    url_prefix = 'https://sdf.ndbc.noaa.gov/sos/server.php'
 
-# `requests.post()` doesn't work for some reason but get does
-r = requests.get(url_prefix, params=payload_str)
+    # dict containing the specifics of our request. See IOOS site for details.
+    payload = {'request': 'GetObservation',
+               'service': 'SOS',
+               'version': '1.0.0',
+               'offering': offering,
+               'observedproperty': observed_property,
+               'responseformat': 'text/csv',
+               'eventtime': 'latest'}
 
-# weather station data file in format csv module can handle
-weather_file = StringIO(r.text)
+    # reformat the payload using typical HTTP POST syntax
+    # this step is necessary because there are colons in the request that
+    # cannot be escaped out or the request will be rejected as invalid
+    payload_str = "&".join("%s=%s" % (k, v) for k, v in payload.items())
 
-# convert text data to dictionary
-weather_data = csv.DictReader(weather_file, delimiter=',')
-weather_fieldnames = weather_data.fieldnames
+    # `requests.post()` doesn't work for some reason but get does
+    r = requests.get(url_prefix, params=payload_str)
 
-for line in weather_data:
-    for name in weather_fieldnames:
-        print(name + ": " + str(line[name]))
+    # weather station data file in format csv module can handle
+    weather_file = StringIO(r.text)
 
-print(r.text)
+    # convert text data to dictionary
+    weather_data = csv.DictReader(weather_file, delimiter=',')
+    weather_fieldnames = weather_data.fieldnames
+
+    for line in weather_data:
+        for fieldname in weather_fieldnames:
+            fieldvalue = line[fieldname]
+            print(fieldname + ": " + fieldvalue)
+
+    # print(r.text)
+
+sos_data = get_sos_data(42019, 'waves')
