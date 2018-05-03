@@ -73,7 +73,7 @@ def get_sos_data(station_id, observed_property, fieldnames=None):
     returned_fieldvalues = {}
 
     # return all of the possible data if fieldnames parameter is None
-    if fieldnames == None:
+    if fieldnames is None:
         fieldnames = weather_data.fieldnames
 
     print("fieldnames:\n")
@@ -86,6 +86,8 @@ def get_sos_data(station_id, observed_property, fieldnames=None):
 
     return returned_fieldvalues
 
+
+# test code to see how the function operates
 
 # field names for values I'd like returned
 field_names = [
