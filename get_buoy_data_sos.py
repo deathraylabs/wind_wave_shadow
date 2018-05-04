@@ -76,8 +76,8 @@ def get_sos_data(station_id, observed_property, fieldnames=None):
     if fieldnames is None:
         fieldnames = weather_data.fieldnames
 
-    print("fieldnames:\n")
-    print(weather_data.fieldnames)
+    # print("fieldnames:\n")
+    # print(weather_data.fieldnames)
 
     for line in weather_data:
         for fieldname in fieldnames:
@@ -90,18 +90,26 @@ def get_sos_data(station_id, observed_property, fieldnames=None):
 # test code to see how the function operates
 
 # field names for values I'd like returned
-field_names = [
-              'date_time',
-              'sea_surface_wave_significant_height (m)',
-              'sea_surface_wave_peak_period (s)',
-              'sea_surface_wave_to_direction (degree)',
-             ]
+waves_field_names = [
+                     'date_time',
+                     'sea_surface_wave_significant_height (m)',
+                     'sea_surface_wave_peak_period (s)',
+                     'sea_surface_wave_to_direction (degree)',
+                    ]
 
-# sos_data = get_sos_data(42019, 'waves', field_names)
-sos_data = get_sos_data(42019, 'waves')
-print("waves data:\n")
-p.pprint(sos_data)
+winds_field_names = [
+                     'date_time',
+                     'depth (m)',
+                     'wind_from_direction (degree)',
+                     'wind_speed (m/s)',
+                     'wind_speed_of_gust (m/s)',
+                    ]
 
-sos_data = get_sos_data(42019, 'winds')
-print("winds data:\n")
-p.pprint(sos_data)
+# # sos_data = get_sos_data(42019, 'waves', field_names)
+# sos_data = get_sos_data(42019, 'waves', waves_field_names)
+# print("waves data:\n")
+# p.pprint(sos_data)
+#
+# sos_data = get_sos_data('luit2', 'winds', winds_field_names)
+# print("winds data:\n")
+# p.pprint(sos_data)

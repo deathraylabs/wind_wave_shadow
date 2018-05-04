@@ -9,6 +9,7 @@ import PIL.ImageDraw
 import PIL.ImageColor
 import math
 from datetime import datetime
+from get_buoy_data_sos import get_sos_data
 
 # todo: get some legit docstrings in this bitch
 
@@ -442,9 +443,15 @@ root.title("Wind and Wave Shadow Projections")
 # initialize our canvas object
 map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
-from get_buoy_data import current_buoy_data
-swell_direction_input = float(current_buoy_data()[0])
-wind_direction_input = float(current_buoy_data()[1])
+swell_field = ['sea_surface_wave_to_direction (degree)']
+swell_direction_dict = get_sos_data(42019, 'waves', swell_field)
+swell_direction_input = float(swell_direction_dict[swell_field[0]])
+# convert to the direction the swell is coming from
+swell_direction_input = (swell_direction_input + 180) % 360
+
+winds_field = ['wind_from_direction (degree)']
+winds_direction_dict = get_sos_data('luit2', 'winds', winds_field)
+wind_direction_input = float(winds_direction_dict[winds_field[0]])
 
 # prompt for wind and wave direction
 map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
