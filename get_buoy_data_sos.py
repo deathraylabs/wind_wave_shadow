@@ -105,8 +105,8 @@ winds_field_names = [
                      'wind_speed_of_gust (m/s)',
                     ]
 
-# # sos_data = get_sos_data(42019, 'waves', field_names)
-# sos_data = get_sos_data(42019, 'waves', waves_field_names)
+# # sos_data = get_station_data(42019, 'waves', field_names)
+# sos_data = get_station_data(42019, 'waves', waves_field_names)
 # print("waves data:\n")
 # p.pprint(sos_data)
 #
