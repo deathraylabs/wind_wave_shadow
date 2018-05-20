@@ -448,6 +448,7 @@ swell_direction_dict = get_sos_data(42019, 'waves', swell_field)
 swell_direction_input = float(swell_direction_dict[swell_field[0]])
 # convert to the direction the swell is coming from
 swell_direction_input = (swell_direction_input + 180) % 360
+print('swell direction input ' + str(swell_direction_input))
 
 winds_field = ['wind_from_direction (degree)']
 winds_direction_dict = get_sos_data('luit2', 'winds', winds_field)
