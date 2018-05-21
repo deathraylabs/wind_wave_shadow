@@ -108,6 +108,8 @@ obs_time = wind_data_dict['t']
 wind_speed = wind_data_dict['s']
 wind_dir = wind_data_dict['d']
 
+another_try = coops_data_raw['data'][0]['s']
+
 print("wind data:\n"
       '\n'
       'observation time: {}\n'
@@ -115,3 +117,4 @@ print("wind data:\n"
       'wind speed:       {} mph\n'.format(obs_time, wind_dir, wind_speed)
       )
 
+print('another try' + str(another_try))

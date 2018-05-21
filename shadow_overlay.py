@@ -10,6 +10,7 @@ import PIL.ImageColor
 import math
 from datetime import datetime
 from get_buoy_data_sos import get_sos_data
+from get_station_data_coops import get_station_data
 
 # todo: get some legit docstrings in this bitch
 
@@ -450,9 +451,12 @@ swell_direction_input = float(swell_direction_dict[swell_field[0]])
 swell_direction_input = (swell_direction_input + 180) % 360
 print('swell direction input ' + str(swell_direction_input))
 
-winds_field = ['wind_from_direction (degree)']
-winds_direction_dict = get_sos_data('luit2', 'winds', winds_field)
-wind_direction_input = float(winds_direction_dict[winds_field[0]])
+# winds_field = ['wind_from_direction (degree)']
+# winds_direction_dict = get_sos_data('luit2', 'winds', winds_field)
+# wind_direction_input = float(winds_direction_dict[winds_field[0]])
+
+wind_data_dict = get_station_data('8772447', 'wind')['data'][0]
+wind_direction_input = wind_data_dict['d']
 
 # prompt for wind and wave direction
 map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)
