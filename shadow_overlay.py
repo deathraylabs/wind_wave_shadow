@@ -16,11 +16,11 @@ from get_station_data_coops import get_station_data
 
 # get arguments from command line
 try:
-    wind_direction_input = sys.argv[1]
-    swell_direction_input = sys.argv[2]
+    wind_direction_input = float(sys.argv[1])
+    swell_direction_input = float(sys.argv[2])
 except IndexError:
     # fail gracefully if not run from command line
-    print("No command line arguments given.")
+    print("No command line arguments given.\n")
     wind_direction_input = None
     swell_direction_input = None
 
@@ -310,7 +310,7 @@ class MainWindow:
                           self.coords["n_shoreline_end"]]
             draw_polygon(self.overlay, coord_list)
 
-        print(self.coords)
+        # print(self.coords)
 
         # combine images to format tk can use
         tkcomposite = combine_image_overlay(self.base_image,
@@ -370,7 +370,12 @@ class MainWindow:
               "*    click on the map to calibrate   *\n"
               "**************************************\n"
               "*      right mouse button resets     *\n"
-              "**************************************\n")
+              "**************************************\n"
+              "*         'q' closes window          *\n"
+              "**************************************\n"
+              "*    'p' saves image to downloads    *\n"
+              "**************************************\n"
+              )
 
         self.canvas.focus_set()
 
@@ -444,19 +449,24 @@ root.title("Wind and Wave Shadow Projections")
 # initialize our canvas object
 map_canvas = MainWindow(root, "surfside.png", "surfside_mask.png")
 
-swell_field = ['sea_surface_wave_to_direction (degree)']
-swell_direction_dict = get_sos_data(42019, 'waves', swell_field)
-swell_direction_input = float(swell_direction_dict[swell_field[0]])
+if swell_direction_input is None:
+    print('no swell direction provided, fetching from buoy...\n')
+    swell_field = ['sea_surface_wave_to_direction (degree)']
+    swell_direction_dict = get_sos_data(42019, 'waves', swell_field)
+    swell_direction_input = float(swell_direction_dict[swell_field[0]])
+
 # convert to the direction the swell is coming from
 swell_direction_input = (swell_direction_input + 180) % 360
-print('swell direction input ' + str(swell_direction_input))
+print('swell direction: ' + str(swell_direction_input))
 
 # winds_field = ['wind_from_direction (degree)']
 # winds_direction_dict = get_sos_data('luit2', 'winds', winds_field)
 # wind_direction_input = float(winds_direction_dict[winds_field[0]])
 
-wind_data_dict = get_station_data('8772447', 'wind')['data'][0]
-wind_direction_input = wind_data_dict['d']
+if wind_direction_input is None:
+    print('no wind direction provided, fetching from Freeport station...\n')
+    wind_data_dict = get_station_data('8772447', 'wind')['data'][0]
+    wind_direction_input = wind_data_dict['d']
 
 # prompt for wind and wave direction
 map_canvas.get_windwave_direction(wind_direction_input, swell_direction_input)

@@ -116,5 +116,3 @@ print("wind data:\n"
       'wind direction:   {}°\n'
       'wind speed:       {} mph\n'.format(obs_time, wind_dir, wind_speed)
       )
-
-print('another try' + str(another_try))
